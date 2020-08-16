@@ -71,8 +71,11 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--spiders", default=10, help="Number of spidertrons")
+    parser.add_argument("-s", "--spiders", default=10, help="Number of spidertrons (1-10)")
     parser.add_argument("-p", "--pause", default=0.02, help="Pause after each PyAutoGUI call")
     args = parser.parse_args()
 
-    execute(args.spiders, args.pause)
+    if spiders <=0 or spiders >10:
+        print('Error: Spiders must currently be between 0 and 10')
+    else:
+        execute(args.spiders, args.pause)
