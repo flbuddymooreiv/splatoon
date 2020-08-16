@@ -4,20 +4,21 @@ from pynput import mouse
 import time
 import pyautogui
 
+
 vectorx = None
 vectory = None
 flankx = None
 flanky = None
 
+
 def on_move(x, y):
     pass
 
+
 def on_click(x, y, button, pressed):
-    print('{0} at {1}'.format(
-        'Pressed' if pressed else 'Released',
-        (x, y)))
+    print("{0} at {1}".format("Pressed" if pressed else "Released", (x, y)))
     if pressed:
-        global anchorx, anchory, vectorx, vectory, flankx, flanky
+        global vectorx, vectory, flankx, flanky
         if not vectorx and not vectory:
             vectorx = x
             vectory = y
@@ -28,35 +29,50 @@ def on_click(x, y, button, pressed):
         if vectorx and vectory and flankx and flanky:
             return False
 
+
 def on_scroll(x, y, dx, dy):
     pass
 
-# Collect events until released
-with mouse.Listener(
-        on_move=on_move,
-        on_click=on_click,
-        on_scroll=on_scroll) as listener:
-    listener.join()
 
-print(vectorx, vectory, flankx, flanky)
 
-points = []
 
-spiders = 10
-deltax = (flankx - vectorx)*2
-deltay = (flanky - vectory)*2
+def execute(spiders, pause):
 
-pyautogui.PAUSE = .02
+    # Collect events until released
+    with mouse.Listener(
+        on_move=on_move, on_click=on_click, on_scroll=on_scroll
+    ) as listener:
+        listener.join()
 
-for s in range(0,spiders):
-    dx = (deltax/spiders) * s
-    dy = (deltay/spiders) * s
-    px = flankx + dx
-    py = flanky + dy
+    print(vectorx, vectory, flankx, flanky)
 
-    pyautogui.press(str(s+1) if s+1<10 else '0')
-    pyautogui.moveTo(px, py)
-    pyautogui.mouseDown()
-    pyautogui.mouseUp()
+    points = []
 
-pyautogui.press('q')
+    deltax = (flankx - vectorx) * 2
+    deltay = (flanky - vectory) * 2
+
+    pyautogui.PAUSE = pause
+
+    for s in range(0, spiders):
+        dx = (deltax / spiders) * s
+        dy = (deltay / spiders) * s
+        px = flankx + dx
+        py = flanky + dy
+
+        pyautogui.press(str(s + 1) if s + 1 < 10 else "0")
+        pyautogui.moveTo(px, py)
+        pyautogui.mouseDown()
+        pyautogui.mouseUp()
+
+    pyautogui.press("q")
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--spiders", default=10, help="Number of spidertrons")
+    parser.add_argument("-p", "--pause", default=0.02, help="Pause after each PyAutoGUI call")
+    args = parser.parse_args()
+
+    execute(args.spiders, args.pause)
