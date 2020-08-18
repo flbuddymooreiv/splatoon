@@ -55,46 +55,51 @@ def on_scroll(x, y, dx, dy):
 
 
 
-
 def execute(spiders, pause):
 
-    if spiders <=0 or spiders >10:
-        print('Error: Spiders must currently be between 0 and 10')
-    else:
+    #Collect events until released
+    with mouse.Listener(
+        on_move=on_move, on_click=on_click, on_scroll=on_scroll
+    ) as listener:
+        listener.join()
 
-        # Collect events until released
-        with mouse.Listener(
-            on_move=on_move, on_click=on_click, on_scroll=on_scroll
-        ) as listener:
-            listener.join()
+    deltax = (flankx - vectorx)
+    deltay = (flanky - vectory)
 
-        print(vectorx, vectory, flankx, flanky)
+    pyautogui.PAUSE = pause
 
-        deltax = (flankx - vectorx)
-        deltay = (flanky - vectory)
+    pyautogui.keyDown('shift')
+    pyautogui.keyDown('1')
+    pyautogui.keyUp('1')
+    pyautogui.keyUp('shift')
 
-        pyautogui.PAUSE = pause
+    for s in range(0, spiders):
+        dx = (deltax / spiders) * s
+        dy = (deltay / spiders) * s
+        px = vectorx + dx
+        py = vectory + dy
 
-        for s in range(0, spiders):
-            dx = (deltax / spiders) * s
-            dy = (deltay / spiders) * s
-            px = vectorx + dx
-            py = vectory + dy
+        pyautogui.press(str(s + 1) if s + 1 < 10 else "0")
+        pyautogui.moveTo(px, py)
+        pyautogui.mouseDown()
+        pyautogui.mouseUp()
 
-            pyautogui.press(str(s + 1) if s + 1 < 10 else "0")
-            pyautogui.moveTo(px, py)
-            pyautogui.mouseDown()
-            pyautogui.mouseUp()
-
-        pyautogui.press("q")
-
+    pyautogui.press("q")
+    pyautogui.keyDown('shift')
+    pyautogui.keyDown('1')
+    pyautogui.keyUp('1')
+    pyautogui.keyUp('shift')
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--spiders", default=10, help="Number of spidertrons (1-10)")
-    parser.add_argument("-p", "--pause", default=0.06, help="Pause after each PyAutoGUI call")
+    parser.add_argument("-p", "--pause", default=0.04, help="Pause after each PyAutoGUI call")
     args = parser.parse_args()
+
+    if args.spiders <=0 or args.spiders >10:
+        print('Error: Spiders must currently be between 0 and 10')
+        exit(-1)
 
     execute(args.spiders, args.pause)
