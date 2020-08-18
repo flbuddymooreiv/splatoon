@@ -58,33 +58,35 @@ def on_scroll(x, y, dx, dy):
 
 def execute(spiders, pause):
 
-    # Collect events until released
-    with mouse.Listener(
-        on_move=on_move, on_click=on_click, on_scroll=on_scroll
-    ) as listener:
-        listener.join()
+    if spiders <=0 or spiders >10:
+        print('Error: Spiders must currently be between 0 and 10')
+    else:
 
-    print(vectorx, vectory, flankx, flanky)
+        # Collect events until released
+        with mouse.Listener(
+            on_move=on_move, on_click=on_click, on_scroll=on_scroll
+        ) as listener:
+            listener.join()
 
-    points = []
+        print(vectorx, vectory, flankx, flanky)
 
-    deltax = (flankx - vectorx) * 2
-    deltay = (flanky - vectory) * 2
+        deltax = (flankx - vectorx)
+        deltay = (flanky - vectory)
 
-    pyautogui.PAUSE = pause
+        pyautogui.PAUSE = pause
 
-    for s in range(0, spiders):
-        dx = (deltax / spiders) * s
-        dy = (deltay / spiders) * s
-        px = flankx + dx
-        py = flanky + dy
+        for s in range(0, spiders):
+            dx = (deltax / spiders) * s
+            dy = (deltay / spiders) * s
+            px = vectorx + dx
+            py = vectory + dy
 
-        pyautogui.press(str(s + 1) if s + 1 < 10 else "0")
-        pyautogui.moveTo(px, py)
-        pyautogui.mouseDown()
-        pyautogui.mouseUp()
+            pyautogui.press(str(s + 1) if s + 1 < 10 else "0")
+            pyautogui.moveTo(px, py)
+            pyautogui.mouseDown()
+            pyautogui.mouseUp()
 
-    pyautogui.press("q")
+        pyautogui.press("q")
 
 
 if __name__ == "__main__":
@@ -92,10 +94,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--spiders", default=10, help="Number of spidertrons (1-10)")
-    parser.add_argument("-p", "--pause", default=0.02, help="Pause after each PyAutoGUI call")
+    parser.add_argument("-p", "--pause", default=0.06, help="Pause after each PyAutoGUI call")
     args = parser.parse_args()
 
-    if spiders <=0 or spiders >10:
-        print('Error: Spiders must currently be between 0 and 10')
-    else:
-        execute(args.spiders, args.pause)
+    execute(args.spiders, args.pause)
